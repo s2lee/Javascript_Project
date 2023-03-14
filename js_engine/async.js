@@ -1,3 +1,9 @@
+/* 
+ 1. async await -> promise chaning 보다 가독성 좋음 
+ 2. 함수 앞에 async 키워드를 붙이면 항상 promise 를 반환함
+ 3. await 키워드 오른쪽에는 프로미스가 오고 프로미스가 처리될 때까지 기다림
+ */
+
 async function a() {
     console.log('2'); // 여기만 동기
     const a = await 1; // await 때문에 그 밑에 다 비동기로
@@ -22,31 +28,6 @@ a()
 
 // 동기
 console.log('3');
-
-let a = 2;
-// 함수 먼저 실행되고 p에 대입된 다음 내려감
-
-const p = new Promise((resolve, reject) => {
-    console.log('제일 먼저. 동기임'); // 1
-    setTimeout(() => {
-        a = 5;
-        console.log(a); // 4
-        resolve(a + 1);
-    }, 0);
-    console.log('여기까지도 동기'); // 2
-});
-
-// code ...
-console.log('딴짓'); // 3
-p.then((result) => {
-    console.log(result); // 5
-});
-
-function delayP(ms) {
-    return new Promise((resolve, reject) => {
-        setTimeout(resolve, ms);
-    });
-}
 
 async function b() {
     try {
@@ -112,18 +93,6 @@ async function g() {
     await delayP(9000); // 9초;
 }
 
-new Promise((resolve, reject) => {
-    const p1 = delayP(3000);
-    const p2 = delayP(6000);
-    return Promise.all([p1, p2]);
-})
-    .then(() => {
-        return delayP(9000);
-    })
-    .then(() => {});
-
-// promise -> 실행은 바로 -> 결과값이 나올 때는 나중 -> 결괏값을 사용할 때는 더 나중
-
 async function createPost() {
     const post = await db.getPost(); // 게시글 조회
     if (post) {
@@ -136,3 +105,74 @@ async function createPost() {
         await Promise.allSettled([p1, p2]);
     }
 }
+
+async function getName(name = 'Kael') {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve(name);
+        }, 1000);
+    });
+    // return 'Mike';
+    // return Promise.resolve('Tom')
+    // throw new Error('err...')
+}
+console.log(getName());
+getName()
+    .then((name) => {
+        console.log(name);
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+
+async function showName() {
+    const result = await getName('Mike');
+    console.log(result);
+}
+console.log('시작');
+showName();
+
+const f1 = () => {
+    console.log('시작');
+    return new Promise((res, rej) => {
+        setTimeout(() => {
+            res('1번 주문 완료');
+        }, 1000);
+    });
+};
+
+const f2 = (message) => {
+    console.log(message);
+    return new Promise((res, rej) => {
+        setTimeout(() => {
+            res('2번 주문 완료');
+            // rej(new Error('err..'));
+        }, 3000);
+    });
+};
+
+const f3 = (message) => {
+    console.log(message);
+    return new Promise((res, rej) => {
+        setTimeout(() => {
+            res('3번 주문 완료');
+        }, 2000);
+    });
+};
+
+console.log('시작');
+async function order() {
+    try {
+        const result1 = await f1();
+        const result2 = await f2(result1);
+        const result3 = await f3(result2);
+        console.log(result3);
+        const result = await Promise.all([f1(), f2(), f3()]);
+        console.log(result);
+    } catch (e) {
+        console.log(e);
+    }
+    console.log('종료');
+}
+
+order();
