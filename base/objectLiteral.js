@@ -7,7 +7,7 @@ const book = {
     color: 'white', // 쉼표  끝에 찍어주
     '2temp': 'hi there',
     log: function (value) {
-        // 객체 안에 있는 함수 = 메서드(method)
+        // 객체 프로퍼티로 할당 된 함수 = 메서드(method)
         return value;
     },
 };
@@ -26,3 +26,38 @@ const t = { name: 'hi' };
 const array = [1, 2, t];
 console.log(t === array[2]);
 console.log(array === [1, 2, t]); // false
+
+let name = 'clark';
+let age = 33;
+const superman = {
+    name, // name: name
+    age, // age: age
+    gender: 'male',
+};
+superman.hairColor = 'black';
+superman['hobby'] = 'football';
+delete superman.age;
+console.log(superman);
+console.log(superman.birthDay); // 존재하지 않는 속성에 접근시 undefined
+
+console.log('age' in superman);
+console.log('gender' in superman);
+
+function isAdult(user) {
+    if (!('age' in user) || user.age < 20) {
+        return false;
+    }
+    return true;
+}
+
+const Mike = {
+    name: 'Mike',
+    age: 30,
+};
+
+const Jane = {
+    name: 'Jane',
+};
+
+console.log(isAdult(Mike));
+console.log(isAdult(Jane));
